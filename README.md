@@ -30,20 +30,22 @@ $ mapture search fullscreen
 ```
 
 ### 🏗️ Implementation Plan
-- [] Config Parsers Layer
+- [ ] Config Parsers Layer
 Parsers that understand how different apps define keymaps (e.g. Neovim, Tmux, i3, Aerospace).
 
-- [] Unified Keymap Model
+- [ ] Unified Keymap Model
 A single internal representation for all those shortcuts, no matter the tool.
 
-- [] Search Engine (Fuzzy)
+- [ ] Search Engine (Fuzzy)
 A fast fuzzy matcher to power search queries.
 
-- [] CLI Layer
+- [ ] CLI Layer
 Clean, ergonomic CLI commands (built on Cobra or another Go CLI toolkit).
 
-- [] Pretty Output/TUI
+- [ ] Pretty Output/TUI
 Colorful, nicely formatted results you can actually read.
+
+- [ ] Export Cheatsheets files for other CLIs
 
 ---
 ### 🌟 Nice to Haves
