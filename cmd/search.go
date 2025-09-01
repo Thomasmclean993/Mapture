@@ -1,92 +1,68 @@
 package cmd
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"strings"
 
-    tea "github.com/charmbracelet/bubbletea"
-    "github.com/spf13/cobra"
-
-    "github.com/thomasmclean993/mapture/internal/parser"
-    "github.com/thomasmclean993/mapture/internal/search"
-    "github.com/thomasmclean993/mapture/internal/tui"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/spf13/cobra"
+	"github.com/thomasmclean993/mapture/internal/parser"
+	"github.com/thomasmclean993/mapture/internal/search"
+	"github.com/thomasmclean993/mapture/internal/tui"
 )
 
-// shared with list.go for consistent flag naming
 var searchFilePath string
+var searchSource string
 var useTUI bool
-var source string // NEW: --source flag
 
 var searchCmd = &cobra.Command{
-    Use:   "search [query]",
-    Short: "Fuzzy search your keymaps by query",
-    Args:  cobra.MaximumNArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-        var query string
-        if len(args) > 0 {
-            query = args[0]
-        }
+	Use:   "search [query]",
+	Short: "Fuzzy search your keymaps",
+	Args:  cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		var query string
+		if len(args) > 0 {
+			query = args[0]
+		}
 
-        // Lookup parser from Registry by source flag
-        p, ok := parser.Registry[source]
-        if !ok {
-            fmt.Printf("Unknown source: %s\n", source)
-            return
-        }
+		keymaps, err := parser.GetKeymaps(searchSource, searchFilePath)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
 
-        data, err := os.ReadFile(searchFilePath)
-        if err != nil {
-            fmt.Println("Error:", err)
-            return
-        }
+		if useTUI {
+			program := tea.NewProgram(tui.New(keymaps))
+			if _, err := program.Run(); err != nil {
+				fmt.Println("TUI error:", err)
+			}
+			return
+		}
 
-        keymaps, err := p.Parse(data)
-        if err != nil {
-            fmt.Println("Parse error:", err)
-            return
-        }
+		if query == "" {
+			fmt.Println("Error: must provide a query (unless using --tui)")
+			return
+		}
 
-        // Handle TUI mode
-        if useTUI {
-            program := tea.NewProgram(tui.New(keymaps))
-            if _, err := program.Run(); err != nil {
-                fmt.Println("TUI error:", err)
-            }
-            return
-        }
+		results := search.Search(keymaps, query)
+		if len(results) == 0 {
+			fmt.Println("No matches found.")
+			return
+		}
 
-        // If no query is given in non-TUI mode
-        if query == "" {
-            fmt.Println("Error: you must provide a query (or use --tui)")
-            return
-        }
-
-        // Normal CLI search
-        results := search.Search(keymaps, query)
-        if len(results) == 0 {
-            fmt.Println("No matches found.")
-            return
-        }
-
-        for _, km := range results {
-            fmt.Printf("[%s] (%s) %s -> %s\n",
-                km.Source, km.Mode, km.Shortcut, km.Actions)
-        }
-    },
+		for _, km := range results {
+			fmt.Printf("[%s] (%s) %s -> %s\n",
+				km.Source, km.Mode, km.Shortcut,
+				strings.Join(km.Actions, ", "),
+			)
+		}
+	},
 }
 
 func init() {
-    searchCmd.Flags().StringVarP(
-        &searchFilePath,
-        "file", "f",
-        "aerospace.toml",
-        "Path to config file",
-    )
-
-    searchCmd.Flags().BoolVarP(&useTUI, "tui", "t", false, "Run search in interactive TUI mode")
-
-    // NEW: add --source flag, defaulting to aerospace
-    searchCmd.Flags().StringVarP(&source, "source", "s", "aerospace", "Config source (aerospace, nvim, tmux)")
-
-    rootCmd.AddCommand(searchCmd)
+	searchCmd.Flags().StringVarP(&searchFilePath, "file", "f", "", "Path to config file (optional)")
+	// ✅ default directly to "all"
+	searchCmd.Flags().StringVarP(&searchSource, "source", "s", "all", "Config source (aerospace, nvim, all). Defaults to all.")
+	searchCmd.Flags().BoolVarP(&useTUI, "tui", "t", false, "Interactive TUI search mode")
+	rootCmd.AddCommand(searchCmd)
 }

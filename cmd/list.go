@@ -1,63 +1,44 @@
 package cmd
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"strings"
 
-    "github.com/spf13/cobra"
-    "github.com/thomasmclean993/mapture/internal/parser"
+	"github.com/spf13/cobra"
+	"github.com/thomasmclean993/mapture/internal/parser"
 )
 
-// flags
 var listFilePath string
 var listSource string
 
 var listCmd = &cobra.Command{
-    Use:   "list",
-    Short: "List keymaps from a config",
-    Args:  cobra.NoArgs, // no positional args now, since we use --source
-    Run: func(cmd *cobra.Command, args []string) {
-        p, ok := parser.Registry[listSource]
-        if !ok {
-            fmt.Printf("Unknown source: %s\n", listSource)
-            return
-        }
+	Use:   "list",
+	Short: "List keymaps from configs",
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		keymaps, err := parser.GetKeymaps(listSource, listFilePath)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
 
-        data, err := os.ReadFile(listFilePath)
-        if err != nil {
-            fmt.Println("Error:", err)
-            return
-        }
+		if len(keymaps) == 0 {
+			fmt.Println("No keymaps found.")
+			return
+		}
 
-        keymaps, err := p.Parse(data)
-        if err != nil {
-            fmt.Println("Parse error:", err)
-            return
-        }
-
-        for _, km := range keymaps {
-            fmt.Printf("[%s] (%s) %s -> %s\n",
-                km.Source, km.Mode, km.Shortcut, km.Actions)
-        }
-    },
+		for _, km := range keymaps {
+			fmt.Printf("[%s] (%s) %s -> %s\n",
+				km.Source, km.Mode, km.Shortcut,
+				strings.Join(km.Actions, ", "),
+			)
+		}
+	},
 }
 
 func init() {
-    // --file flag
-    listCmd.Flags().StringVarP(
-        &listFilePath,
-        "file", "f",
-        "aerospace.toml",
-        "Path to config file",
-    )
-
-    // --source flag (aerospace by default)
-    listCmd.Flags().StringVarP(
-        &listSource,
-        "source", "s",
-        "aerospace",
-        "Config source (aerospace, nvim, tmux)",
-    )
-
-    rootCmd.AddCommand(listCmd)
+	listCmd.Flags().StringVarP(&listFilePath, "file", "f", "", "Path to config file (optional)")
+	// ✅ default directly to "all"
+	listCmd.Flags().StringVarP(&listSource, "source", "s", "all", "Config source (aerospace, nvim, all). Defaults to all.")
+	rootCmd.AddCommand(listCmd)
 }
