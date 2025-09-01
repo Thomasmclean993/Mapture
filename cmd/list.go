@@ -28,12 +28,13 @@ var listCmd = &cobra.Command{
 		}
 
 		for _, km := range keymaps {
-			fmt.Printf("[%s] (%s) %s -> %s\n",
-				km.Source, km.Mode, km.Shortcut,
+			fmt.Printf("%s → %s  [%s] (%s)\n",
+				km.Shortcut,
 				strings.Join(km.Actions, ", "),
-			)
-		}
-	},
+				km.Source,
+				km.Mode,
+	)		}
+		},
 }
 
 func init() {
