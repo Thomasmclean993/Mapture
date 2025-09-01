@@ -6,7 +6,7 @@ type Keymap struct {
     Source   string // e.g. "aerospace", "nvim", "tmux"
 	Mode 	 string // e.g. "main", "resize", "manage"
     Shortcut string // e.g. "mod+f", "<leader>ff"
-    Action   string // e.g. "toggle_fullscreen"
+    Actions   []string // e.g. "toggle_fullscreen"
 }
 
 // Maybe a subtype?

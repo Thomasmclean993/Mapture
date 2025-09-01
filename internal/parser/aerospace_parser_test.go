@@ -1,33 +1,36 @@
 package parser
 
 import (
-    "testing"
-	"github.com/google/go-cmp/cmp"
+	"testing"
 
-    "github.com/thomasmclean993/mapture/internal/model"
+	"github.com/google/go-cmp/cmp"
+	"github.com/thomasmclean993/mapture/internal/model"
 )
 
 func TestAerospaceParser(t *testing.T) {
-    input := `
+	input := `
     [mode.main.binding]
     alt-q = 'close'
     alt-f = 'fullscreen'
     alt-esc = ['reload-config', 'mode main']
     `
 
-    parser := AerospaceParser{}
-    got, err := parser.Parse([]byte(input))
-    if err != nil {
-        t.Fatalf("unexpected error: %v", err)
-    }
+	got, err := AerospaceParser{}.Parse([]byte(input))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
-   want := []model.Keymap{
-    {Source: "aerospace", Mode: "main", Shortcut: "alt-q", Action: "close"},
-    {Source: "aerospace", Mode: "main", Shortcut: "alt-f", Action: "fullscreen"},
-    {Source: "aerospace", Mode: "main", Shortcut: "alt-esc", Action: "reload-config"},
-    {Source: "aerospace", Mode: "main", Shortcut: "alt-esc", Action: "mode main"},
-}
-    if diff := cmp.Diff(want, got); diff != "" {
-    t.Errorf("mismatch (-want +got):\n%s", diff)
+	want := []model.Keymap{
+		{Source: "aerospace", Mode: "main", Shortcut: "alt-q", Actions: []string{"close"}},
+		{Source: "aerospace", Mode: "main", Shortcut: "alt-f", Actions: []string{"fullscreen"}},
+		{Source: "aerospace", Mode: "main", Shortcut: "alt-esc", Actions: []string{"reload-config", "mode main"}},
+	}
+
+	// Ensure deterministic order before comparing
+	sortKeymaps(got)
+	sortKeymaps(want)
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
 	}
 }
