@@ -9,17 +9,17 @@ import (
 
 func TestSearch(t *testing.T) {
     keymaps := []model.Keymap{
-        {Source: "aerospace", Mode: "main", Shortcut: "alt-q", Action: "close"},
-        {Source: "aerospace", Mode: "main", Shortcut: "alt-f", Action: "fullscreen"},
-        {Source: "nvim", Mode: "normal", Shortcut: "<leader>ff", Action: "telescope find_files"},
-        {Source: "nvim", Mode: "normal", Shortcut: "<leader>fg", Action: "telescope find_grep"},
+        {Source: "aerospace", Mode: "main", Shortcut: "alt-q", Actions: "close"},
+        {Source: "aerospace", Mode: "main", Shortcut: "alt-f", Actions: "fullscreen"},
+        {Source: "nvim", Mode: "normal", Shortcut: "<leader>ff", Actions: "telescope find_files"},
+        {Source: "nvim", Mode: "normal", Shortcut: "<leader>fg", Actions: "telescope find_grep"},
     }
 
     got := Search(keymaps, "find")
     want := []model.Keymap{
         
-        {Source: "nvim", Mode: "normal", Shortcut: "<leader>ff", Action: "telescope find_files"},
-		{Source: "nvim", Mode: "normal", Shortcut: "<leader>fg", Action: "telescope find_grep"},
+        {Source: "nvim", Mode: "normal", Shortcut: "<leader>ff", Actions: "telescope find_files"},
+		{Source: "nvim", Mode: "normal", Shortcut: "<leader>fg", Actions: "telescope find_grep"},
     }
 
     if diff := cmp.Diff(want, got); diff != "" {
