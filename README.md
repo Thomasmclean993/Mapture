@@ -7,11 +7,11 @@ Because life is too short to grep through dotfiles.
 ---
 ## 🚀  Features
 
--> Knows how to parse popular config files (Aerospace, Neovim, … more coming like Tmux, i3).
--> Unified Keymap model (Source, Mode, Shortcut, Actions).
--> Fuzzy search across all your keymaps (via fuzzysearch).
--> TUI powered by Bubble Tea + Bubbles/Table:
-    -> Live Filter as you type.
+- Knows how to parse popular config files (Aerospace, Neovim, … more coming like Tmux, i3).
+- Unified Keymap model (Source, Mode, Shortcut, Actions).
+- Fuzzy search across all your keymaps (via fuzzysearch).
+- TUI powered by Bubble Tea + Bubbles/Table:
+    - Live Filter as you type.
 
 ---
 ### 💡  Usage Examples
