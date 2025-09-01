@@ -51,11 +51,12 @@ var searchCmd = &cobra.Command{
 		}
 
 		for _, km := range results {
-			fmt.Printf("[%s] (%s) %s -> %s\n",
-				km.Source, km.Mode, km.Shortcut,
-				strings.Join(km.Actions, ", "),
-			)
-		}
+		fmt.Printf("%s → %s  [%s] (%s)\n",
+			km.Shortcut,
+			strings.Join(km.Actions, ", "),
+			km.Source,
+			km.Mode,
+)		}
 	},
 }
 
