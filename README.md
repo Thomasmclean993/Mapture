@@ -45,6 +45,33 @@ mapture search telescope --source nvim
 
 ```
 
+#### Configuration (Custom Filepaths)
+You can tell Mapture where your configs live using a YAML file:
+
+`~/.config/mapture/sources.yml`
+
+```YAML
+
+sources:
+  aerospace:
+    path: ~/.config/aerospace.toml
+  nvim:
+    path: ~/.config/nvim/init.lua
+  tmux:
+    path: ~/.tmux.conf
+If sources.yml is missing, defaults are used.
+If you set a path in YAML, it overrides the default.
+Environment variables like $HOME and ~ are supported.
+Example: point nvim parser somewhere else:
+
+```
+
+```yaml
+sources:
+  nvim:
+    path: ~/dotfiles/nvim/maps.lua
+```
+
 ##### Sample Output 
 
 ```
@@ -65,8 +92,10 @@ mapture search -tui
 ---
 
 ## 🛣️  Roadmap
- - [ ] Add Tmux parser (default ~/.tmux.conf).
+ - [X] Add Tmux parser (default ~/.tmux.conf).
  - [ ] Add i3/Sway parser (~/.config/i3/config).
+ - [ ] Add parser to find aliases in .zshrc file 
+ - [ ] Add parser to find aliases in .bashrc
  - [ ]  Add mapture export --format markdown to dump cheatsheets.
  - [ ] Add mapture index to auto‑scan ~/.config/ and build a global keymap index.
  - [ ] Add column sorting in TUI (press S / K etc.)
