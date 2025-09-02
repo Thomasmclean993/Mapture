@@ -1,0 +1,7 @@
+sources:
+  aerospace:
+    path: ~/.config/aerospace.toml
+  nvim:
+    path: ~/.config/nvim/init.lua
+  tmux:
+    path: ~/.tmux.conf
